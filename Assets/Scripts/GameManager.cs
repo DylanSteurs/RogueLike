@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
     public List<Actor> Enemies = new List<Actor>();
-
+    public Actor Player;
     private void Awake()
     {
         if (instance == null)
