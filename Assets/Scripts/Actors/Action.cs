@@ -2,45 +2,60 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Action : MonoBehaviour
 {
-    static private void EndTurn(Actor actor)
+    static public void MoveOrHit(Actor actor, Vector2 direction)
     {
-        Player playerComponent = actor.GetComponent<Player>();
-        if (playerComponent != null)
+        // See if someone is at the target position
+        Actor target = GameManager.Get.GetActorAtLocation(actor.transform.position + (Vector3)direction);
+
+        // If no target, move
+        if (target == null)
         {
-            GameManager.Get.StartEnemyTurn();
+            Move(actor, direction);
+        }
+        else
+        {
+            // If there is a target, hit
+            Hit(actor, target);
+        }
+
+        // End turn in case this is the player
+        EndTurn(actor);
+    }
+
+    static public void Move(Actor actor, Vector2 direction)
+    {
+        if (MapManager.Get.IsWalkable(actor.transform.position + (Vector3)direction))
+        {
+            actor.Move(direction);
+            actor.UpdateFieldOfView();
         }
     }
-    static public void Move(Actor actor, Vector2 direction)
 
+    static public void Hit(Actor actor, Actor target)
     {
+        int damage = actor.Power - target.Defense;
 
-        // see if someone is at the target position 
-
-        Actor target = GameManager.Get.GetActorAtLocation(actor.transform.position
-
-                       + (Vector3)direction);
-
-
-
-        // if not, we can move 
-
-        if (target == null)
-
+        if (damage > 0)
         {
-
-            actor.Move(direction);
-
-            actor.UpdateFieldOfView();
-
+            target.DoDamage(damage);
+            UIManager.Instance.AddMessage($"{actor.name} hits {target.name} for {damage} damage.", actor.GetComponent<Player>() ? Color.white : Color.red);
         }
+        else
+        {
+            UIManager.Instance.AddMessage($"{actor.name} hits {target.name} but does no damage.", actor.GetComponent<Player>() ? Color.white : Color.red);
+        }
+    }
 
-
-
-        // end turn in case this is the player 
-
-        EndTurn(actor);
-
+    static private void EndTurn(Actor actor)
+    {
+        // Check if the actor is the player
+        if (actor.GetComponent<Player>() != null)
+        {
+            // Execute StartEnemyTurn of the GameManager
+            GameManager.Get.StartEnemyTurn();
+        }
     }
 }

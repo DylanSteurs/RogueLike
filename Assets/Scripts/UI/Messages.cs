@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -24,7 +22,7 @@ public class Messages : MonoBehaviour
         Clear();
 
         // Add a welcome message
-        AddMessage("Welcome to the dungeon, Adventurer!", Color.cyan);
+        AddMessage("Welcome to the dungeon, Adventurer!", Color.blue);
     }
 
     public void Clear()

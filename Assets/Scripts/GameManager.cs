@@ -58,4 +58,17 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public void RemoveEnemy(Actor enemy)
+    {
+        if (Enemies.Contains(enemy))
+        {
+            Enemies.Remove(enemy);
+            Destroy(enemy.gameObject);
+            Debug.Log($"{enemy.name} has been removed.");
+        }
+        else
+        {
+            Debug.Log("Enemy not found in the list.");
+        }
+    }
 }

@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
     }
 
     // Function to move along the path to the target position
-    public void MoveAlongPath(Vector3Int targetPosition)
+    public void MoveAlongPath(Vector2Int targetPosition)
     {
         Vector3Int gridPosition = MapManager.Get.FloorMap.WorldToCell(transform.position);
         Vector2 direction = algorithm.Compute((Vector2Int)gridPosition, (Vector2Int)targetPosition);
@@ -37,23 +37,44 @@ public class Enemy : MonoBehaviour
     // Function to run the enemy AI
     public void RunAI()
     {
-        // If target is null, set target to player (from gameManager)
-        if (Target == null)
+        // Als target null is of vernietigd is, stel target in op de speler (vanuit GameManager)
+        if (Target == null || Target.Equals(null))
         {
             Target = GameManager.Get.Player;
         }
 
-        // Convert the position of the target to a gridPosition
-        Vector3Int gridPosition = MapManager.Get.FloorMap.WorldToCell(Target.transform.position);
-
-        // First check if already fighting, because the FieldOfView check costs more CPU
-        if (IsFighting || GetComponent<Actor>().FieldOfView.Contains(gridPosition))
+        // Als de target nog steeds null is na de poging om deze toe te wijzen, keer dan terug
+        if (Target == null)
         {
-            // If the enemy was not fighting, it should be fighting now
-            IsFighting = true;
+            return;
+        }
 
-            // Call MoveAlongPath with the gridPosition
-            MoveAlongPath(gridPosition);
+        // Converteer de positie van de target naar een gridpositie
+        Vector3Int targetGridPosition = MapManager.Get.FloorMap.WorldToCell(Target.transform.position);
+
+        // Controleer eerst of er al gevochten wordt, omdat het controleren van het gezichtsveld meer CPU kost
+        Vector3Int currentGridPosition = MapManager.Get.FloorMap.WorldToCell(transform.position);
+        if (IsFighting || GetComponent<Actor>().FieldOfView.Contains(targetGridPosition))
+        {
+            // Als de vijand niet aan het vechten was, zou hij nu moeten vechten
+            if (!IsFighting)
+            {
+                IsFighting = true;
+            }
+
+            // Bereken de afstand tot de target
+            float distanceToTarget = Vector3.Distance(transform.position, Target.transform.position);
+
+            // Als de afstand minder is dan 1.5, val dan de target aan
+            if (distanceToTarget < 1.5f)
+            {
+                Action.Hit(GetComponent<Actor>(), Target);
+            }
+            else
+            {
+                // Anders, beweeg langs het pad naar de target
+                MoveAlongPath((Vector2Int)targetGridPosition);
+            }
         }
     }
 }
