@@ -8,6 +8,7 @@ public class DungeonGenerator : MonoBehaviour
     private int width, height;
     private int maxRoomSize, minRoomSize;
     private int maxRooms;
+    private int maxItems;
     int maxEnemies = 2;
     List<Room> rooms = new List<Room>();
 
@@ -22,7 +23,10 @@ public class DungeonGenerator : MonoBehaviour
         minRoomSize = min;
         maxRoomSize = max;
     }
-
+    public void SetMaxItems(int max)
+    {
+        maxItems = max;
+    }
     public void SetMaxRooms(int max)
     {
         maxRooms = max;
@@ -76,15 +80,9 @@ public class DungeonGenerator : MonoBehaviour
             }
 
             // create a coridor between rooms
-            if (rooms.Count != 0)
-            {
-                TunnelBetween(rooms[rooms.Count - 1], room);
-            }
-            foreach (var item in rooms)
-            {
-                PlaceEnemies(room, maxEnemies);
-            }
-            rooms.Add(room);
+            PlaceEnemies(room, maxEnemies);
+            PlaceItems(room, maxItems);
+
         }
         var player = GameManager.Get.CreateActor("Player", rooms[0].Center());
     }
@@ -196,5 +194,30 @@ public class DungeonGenerator : MonoBehaviour
 
         }
 
+    }
+    private void PlaceItems(Room room, int maxItems)
+    {
+        // hent aantal items dat we willen
+        int num = Random.Range(0, maxItems + 1);
+
+        for (int counter = 0; counter < num; counter++)
+        {
+            int x = Random.Range(room.X + 1, room.X + room.Width - 1);
+            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
+
+            // create different items
+            if (Random.value < 0.33f)
+            {
+                GameManager.Get.CreateActor("HealthPotion", new Vector2(x, y));
+            }
+            else if (Random.value < 0.66f)
+            {
+                GameManager.Get.CreateActor("Fireball", new Vector2(x, y));
+            }
+            else
+            {
+                GameManager.Get.CreateActor("ScrollOfConfusion", new Vector2(x, y));
+            }
+        }
     }
 }

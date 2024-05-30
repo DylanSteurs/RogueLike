@@ -45,6 +45,7 @@ public class MapManager : MonoBehaviour
     public int roomMinSize = 6;
     public int maxRooms = 30;
     public int maxEnemies = 2;
+    public int maxItems = 2;
     private void Start()
     {
         GenerateDungeon();

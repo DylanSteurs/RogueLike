@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     public List<Actor> Enemies = new List<Actor>();
     public Actor Player { get; set; }
+    public List<Consumables> Items { get; private set; } = new List<Consumables>();
     private void Awake()
     {
         if (instance == null)
@@ -36,6 +37,17 @@ public class GameManager : MonoBehaviour
             if (enemy != null && enemy.transform.position == location)
             {
                 return enemy;
+            }
+        }
+        return null;
+    }
+    public Consumables GetItemAtLocation(Vector3 location)
+    {
+        foreach (var item in Items)
+        {
+            if (item != null && item.transform.position == location)
+            {
+                return item;
             }
         }
         return null;
@@ -70,5 +82,16 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Enemy not found in the list.");
         }
+    }
+    public GameObject CreateItem(string name, Vector2 position)
+    {
+        GameObject item = Instantiate(Resources.Load<GameObject>($"Prefabs/{name}"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity);
+        AddItem(item.GetComponent<Consumables>());
+        item.name = name;
+        return item;
+    }
+    public void AddItem(Consumables item)
+    {
+        Items.Add(item);
     }
 }
