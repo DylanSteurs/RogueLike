@@ -94,4 +94,26 @@ public class GameManager : MonoBehaviour
     {
         Items.Add(item);
     }
+    public void RemoveItem(Consumables item)
+    {
+        if (Items.Contains(item))
+        {
+            Items.Remove(item);
+            Destroy(item.gameObject);
+        }
+    }
+    public List<Actor> GetNearbyEnemies(Vector3 location)
+    {
+        List<Actor> nearbyEnemies = new List<Actor>();
+
+        foreach (Actor enemy in Enemies)
+        {
+            if (Vector3.Distance(enemy.transform.position, location) < 5)
+            {
+                nearbyEnemies.Add(enemy);
+            }
+        }
+
+        return nearbyEnemies;
+    }
 }

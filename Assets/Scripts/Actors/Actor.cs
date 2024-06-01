@@ -31,6 +31,24 @@ public class Actor : MonoBehaviour
             UIManager.Instance.UpdateHealth(hitPoints, maxHitPoints);
         }
     }
+    public void Heal(int hp)
+    {
+        int previousHitPoints = hitPoints;
+        hitPoints += hp;
+        if (hitPoints > maxHitPoints)
+        {
+            hitPoints = maxHitPoints;
+        }
+
+        int healedAmount = hitPoints - previousHitPoints;
+
+        // If this actor is the player, update the health bar and show a message
+        if (GetComponent<Player>())
+        {
+            UIManager.Instance.UpdateHealth(hitPoints, maxHitPoints);
+            UIManager.Instance.AddMessage($"You have been healed by {healedAmount} hit points.", Color.green);
+        }
+    }
 
     private void Die()
     {

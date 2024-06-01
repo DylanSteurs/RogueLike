@@ -1,3 +1,4 @@
+using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,8 +6,10 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour, Controls.IPlayerActions
 {
     private Controls controls;
-    
-
+    public Inventory inventory;
+    private bool inventoryIsOpen = false;
+    private bool droppingItem = false;  
+    private bool usingItem = false;
     private void Awake()
     {
         controls = new Controls();
@@ -34,7 +37,22 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
     {
         if (context.performed)
         {
-            Move();
+            if (inventoryIsOpen)
+            {
+                Vector2 direction = controls.Player.Movement.ReadValue<Vector2>();
+                if (direction.y > 0)
+                {
+                    InventoryUI.SelectPreviousItem();
+                }
+                else if (direction.y < 0)
+                {
+                    InventoryUI.SelectNextItem();
+                }
+            }
+            else
+            {
+                Move();
+            }
         }
     }
 
@@ -50,5 +68,91 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
         Debug.Log("roundedDirection");
         Action.MoveOrHit(GetComponent<Actor>(), roundedDirection);
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -5);
+    }
+
+    public void OnGrab(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Vector3 playerPosition = transform.position;
+            Consumables item = GameManager.Get.GetItemAtLocation(playerPosition);
+
+            if (item == null)
+            {
+                Debug.Log("No items present.");
+            }
+            else if (inventory.IsFull)
+            {
+                Debug.Log("Inventory is full.");
+            }
+            else
+            {
+                inventory.AddItem(item);
+                item.gameObject.SetActive(false);
+                GameManager.Get.RemoveItem(item);
+                Debug.Log($"Picked up {item.name}");
+            }
+        }
+    }
+
+    public void OnDrop(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (!inventoryIsOpen)
+            {
+                InventoryUI.Show(GameManager.Get.Player.GetComponent<Inventory>().Items);
+                inventoryIsOpen = true;
+                droppingItem = true;
+            }
+        }
+    }
+
+    public void OnSelect(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (inventoryIsOpen)
+            {
+                Consumables selectedItem = inventory.Items[InventoryUI.Selected];
+                inventory.DropItem(selectedItem);
+
+                if (droppingItem)
+                {
+                    selectedItem.transform.position = transform.position;
+                    GameManager.Get.AddItem(selectedItem);
+                    selectedItem.gameObject.SetActive(true);
+                }
+                else if (usingItem)
+                {
+                    UseItem(selectedItem);
+                    Destroy(selectedItem.gameObject);
+                }
+
+                InventoryUI.Hide();
+                inventoryIsOpen = false;
+                droppingItem = false;
+                usingItem = false;
+            }
+        }
+    }
+    private void UseItem(Consumables item)
+    {
+        // Implement the functionality for using an item
+        // For now, we will just log the item's name
+        Debug.Log($"Using item: {item.name}");
+    }
+
+    public void OnUse(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (!inventoryIsOpen)
+            {
+                InventoryUI.Show(GameManager.Get.Player.GetComponent<Inventory>().Items);
+                inventoryIsOpen = true;
+                usingItem = true;
+            }
+        }
     }
 }

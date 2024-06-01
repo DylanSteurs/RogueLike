@@ -9,6 +9,9 @@ public class UIManager : MonoBehaviour
     [Header("Documents")]
     public GameObject HealthBar; // Ensure this is assigned in the inspector
     public GameObject Messages;
+    public GameObject Inventory;
+
+    public InventoryUI inventoryUI { get => Inventory.GetComponent<InventoryUI>(); }
 
     private HealthBar healthBar;
     private Messages messagesController;
