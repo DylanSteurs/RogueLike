@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
     public List<Actor> Enemies = new List<Actor>();
+    public List<Ladder> Ladders { get; private set; } = new List<Ladder>();
+    private List<Tombstone> Tombstones = new List<Tombstone>();
+
     public Actor Player { get; set; }
     public List<Consumables> Items { get; private set; } = new List<Consumables>();
     private void Awake()
@@ -23,7 +27,14 @@ public class GameManager : MonoBehaviour
     {
         Enemies.Add(enemy);
     }
-
+    public void AddLadder(Ladder ladder)
+    {
+        Ladders.Add(ladder);
+    }
+    public void AddTombStone(Tombstone stone)
+    {
+        Tombstones.Add(stone);
+    }
     public static GameManager Get { get => instance; }
 
     public Actor GetActorAtLocation(Vector3 location)
@@ -48,6 +59,17 @@ public class GameManager : MonoBehaviour
             if (item != null && item.transform.position == location)
             {
                 return item;
+            }
+        }
+        return null;
+    }
+    public Ladder GetLadderAtLocation(Vector3 location)
+    {
+        foreach (Ladder ladder in Ladders)
+        {
+            if (ladder.transform.position == location)
+            {
+                return ladder;
             }
         }
         return null;
@@ -116,4 +138,77 @@ public class GameManager : MonoBehaviour
 
         return nearbyEnemies;
     }
+    public void ClearFloor()
+    {
+        foreach (var enemy in Enemies)
+        {
+            Destroy(enemy.gameObject);
+        }
+        Enemies.Clear();
+
+        foreach (var item in Items)
+        {
+            Destroy(item.gameObject);
+        }
+        Items.Clear();
+
+        foreach (var ladder in Ladders)
+        {
+            Destroy(ladder.gameObject);
+        }
+        Ladders.Clear();
+
+        foreach (var stone in Tombstones)
+        {
+            Destroy(stone.gameObject);
+        }
+        Tombstones.Clear();
+    }
+        public void SavePlayerData()
+    {
+        if (Player != null)
+        {
+            var player = Player.GetComponent<Player>();
+            PlayerPrefs.SetInt("MaxHitPoints", player.MaxHitPoints);
+            PlayerPrefs.SetInt("HitPoints", player.HitPoints);
+            PlayerPrefs.SetInt("Defense", player.Defense);
+            PlayerPrefs.SetInt("Power", player.Power);
+            PlayerPrefs.SetInt("Level", player.Level);
+            PlayerPrefs.SetInt("XP", player.XP);
+            PlayerPrefs.SetInt("XpToNextLevel", player.XpToNextLevel);
+            PlayerPrefs.Save();
+        }
+    }
+
+    public void LoadPlayerData()
+    {
+        if (Player != null)
+        {
+            var player = Player.GetComponent<Player>();
+            player.MaxHitPoints = PlayerPrefs.GetInt("MaxHitPoints", 100); 
+            player.HitPoints = PlayerPrefs.GetInt("HitPoints", 100);
+            player.Defense = PlayerPrefs.GetInt("Defense", 10);
+            player.Power = PlayerPrefs.GetInt("Power", 10);
+            player.Level = PlayerPrefs.GetInt("Level", 1);
+            player.XP = PlayerPrefs.GetInt("XP", 0);
+            player.XpToNextLevel = PlayerPrefs.GetInt("XpToNextLevel", 100);
+        }
+    }
+
+    public void DeletePlayerSave()
+    {
+        PlayerPrefs.DeleteKey("MaxHitPoints");
+        PlayerPrefs.DeleteKey("HitPoints");
+        PlayerPrefs.DeleteKey("Defense");
+        PlayerPrefs.DeleteKey("Power");
+        PlayerPrefs.DeleteKey("Level");
+        PlayerPrefs.DeleteKey("XP");
+        PlayerPrefs.DeleteKey("XpToNextLevel");
+    }
+
+    public void PlayerDied()
+    {
+        DeletePlayerSave();
+    }
+
 }

@@ -10,9 +10,12 @@ public class DungeonGenerator : MonoBehaviour
     private int maxRooms;
     private int maxItems;
     int maxEnemies = 2;
+    private int currentFloor;
     List<Room> rooms = new List<Room>();
+    private List<string> enemyNames = new List<string>() { "Wasp", "Ghost", "Tigger", "Vel'Koz", "SquidWizzard", "WormHole", "Slenderman", "Gnome", "TrolTwin", "Alladin" };
 
-    public void SetSize(int width, int height)
+
+public void SetSize(int width, int height)
     {
         this.width = width;
         this.height = height;
@@ -82,9 +85,32 @@ public class DungeonGenerator : MonoBehaviour
             // create a coridor between rooms
             PlaceEnemies(room, maxEnemies);
             PlaceItems(room, maxItems);
+            Rect newRoom = new Rect(roomX, roomY, roomWidth, roomHeight);
+            bool overlaps = false;
+            foreach (Rect room in rooms)
+            {
+                if (newRoom.Overlaps(room))
+                {
+                    overlaps = true;
+                    break;
+                }
+            }
 
+            if (!overlaps)
+            {
+                rooms.Add(newRoom);
+
+                // Hier tekenen we de kamer in de tilemap
+                for (int x = (int)newRoom.x; x < (int)newRoom.xMax; x++)
+                {
+                    for (int y = (int)newRoom.y; y < (int)newRoom.yMax; y++)
+                    {
+                        Vector3Int pos = new Vector3Int(x, y, 0);
+                        MapManager.Get.FloorMap.SetTile(pos, MapManager.Get.FloorTile);
+                    }
+                }
+            }
         }
-        var player = GameManager.Get.CreateActor("Player", rooms[0].Center());
     }
 
     private bool TrySetWallTile(Vector3Int pos)

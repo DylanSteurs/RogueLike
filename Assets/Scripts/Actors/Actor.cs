@@ -14,8 +14,10 @@ public class Actor : MonoBehaviour
     [SerializeField] private int hitPoints = 30;
     [SerializeField] private int defense;
     [SerializeField] private int power;
-    
-    
+    [SerializeField] private int level = 1;
+    [SerializeField] private int xp = 0;
+    [SerializeField] private int xpToNextLevel = 100;
+
     public int MaxHitPoints => maxHitPoints;
     public int HitPoints => hitPoints;
     public int Defense => defense;
@@ -50,7 +52,7 @@ public class Actor : MonoBehaviour
         }
     }
 
-    private void Die()
+    private void Die(Actor attacker)
     {
         // Display the death message through the UIManager
         if (GetComponent<Player>())
@@ -70,7 +72,7 @@ public class Actor : MonoBehaviour
         // Destroy this actor's game object
         Destroy(gameObject);
     }
-    public void DoDamage(int hp)
+    public void DoDamage(int hp, Actor attacker)
     {
         hitPoints -= hp;
         if (hitPoints < 0)
@@ -87,7 +89,7 @@ public class Actor : MonoBehaviour
         // If hitPoints are 0, call Die()
         if (hitPoints == 0)
         {
-            Die();
+            Die(attacker);
         }
     }
 
@@ -110,5 +112,10 @@ public class Actor : MonoBehaviour
         {
             MapManager.Get.UpdateFogMap(FieldOfView);
         }
+    }
+    public void AddXP(int amount)
+    {
+        xp += amount;
+
     }
 }

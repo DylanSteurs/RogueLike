@@ -56,21 +56,20 @@ public class InventoryUI : MonoBehaviour
 
     public void SelectNextItem()
     {
-        if (numItems == 0)
+        if (selected < numItems - 1)
         {
-            return;
+            selected++;
+            UpdateSelected();
         }
-        selected = (selected + 1) % numItems;
-        UpdateSelected();
     }
+
     public void SelectPreviousItem()
     {
-        if(numItems == 0)
+        if (selected > 0)
         {
-            return;
+            selected--;
+            UpdateSelected();
         }
-        selected =  (selected - 1 + numItems) % numItems;
-        UpdateSelected();
     }
     public void Show(List<Consumables> list)
     {

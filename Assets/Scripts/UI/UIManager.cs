@@ -4,7 +4,10 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     // Singleton instance
-    public static UIManager Instance { get; private set; }
+
+    public static UIManager Instance;
+    public int selected;
+    public int Selected { get => selected; }
 
     [Header("Documents")]
     public GameObject HealthBar; // Ensure this is assigned in the inspector
@@ -12,6 +15,7 @@ public class UIManager : MonoBehaviour
     public GameObject Inventory;
 
     public InventoryUI inventoryUI { get => Inventory.GetComponent<InventoryUI>(); }
+    public static UIManager Get { get => Instance; }
 
     private HealthBar healthBar;
     private Messages messagesController;
@@ -77,5 +81,14 @@ public class UIManager : MonoBehaviour
         {
             messagesController.AddMessage(message, color);
         }
+    }
+    public void UpdateLevel(int level)
+    {
+        HealthBar.GetComponent<HealthBar>().SetLevel(level);
+    }
+
+    public void UpdateXP(int xp)
+    {
+        HealthBar.GetComponent<HealthBar>().SetXP(xp);
     }
 }

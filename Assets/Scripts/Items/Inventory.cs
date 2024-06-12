@@ -1,27 +1,30 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
-public class Inventory : MonoBehaviour
+public class Inventory
 {
-    public List<Consumables> Items { get; private set; } = new List<Consumables>();
-    public int maxItems ;
+    public List<Consumables> Items = new List<Consumables>();
+    public int MaxItems = 8;
 
     public bool AddItem(Consumables item)
     {
-        if (Items.Count < maxItems)
+        if (Items.Count < MaxItems)
         {
             Items.Add(item);
             return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
     }
+
     public void DropItem(Consumables item)
     {
-        Items.Remove(item);
-    }
-    public bool IsFull
-    {
-        get { return Items.Count >= maxItems; }
+        if (Items.Contains(item))
+        {
+            Items.Remove(item);
+        }
     }
 }

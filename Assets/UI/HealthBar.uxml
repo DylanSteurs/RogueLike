@@ -4,5 +4,7 @@
             <ui:VisualElement name="HealthBar" style="flex-grow: 1; background-color: rgb(28, 255, 0); position: absolute; left: 0; top: 0; bottom: 0; width: 50%;" />
             <ui:Label tabindex="-1" text=" 30/30 HP" parse-escape-sequences="true" display-tooltip-when-elided="true" name="HealthText" style="-unity-font-definition: resource(&apos;Ethiopic_WashRa_SemiBold SDF&apos;);" />
         </ui:VisualElement>
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="LvlText" style="-unity-font-definition: resource(&apos;Ethiopic_WashRa_SemiBold SDF&apos;);" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="XpText" style="-unity-font-definition: resource(&apos;Ethiopic_WashRa_SemiBold SDF&apos;);" />
     </ui:VisualElement>
 </ui:UXML>

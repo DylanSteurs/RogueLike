@@ -6,6 +6,9 @@ public class HealthBar : MonoBehaviour
     private VisualElement root;
     private VisualElement healthBar;
     private Label healthText;
+    private Label LevelText;
+    private Label XpText;
+
 
     // Start is called before the first frame update
     void Start()
@@ -49,5 +52,14 @@ public class HealthBar : MonoBehaviour
 
         // Update the text of the health label
         healthText.text = $"{currentHitPoints}/{maxHitPoints} HP";
+    }
+
+    public void SetXP(int xp)
+    {
+        XpText.text = $"XP: {xp}";
+    }
+    public void SetLevel(int level)
+    {
+        healthText.text = $"Level: {level}";
     }
 }
